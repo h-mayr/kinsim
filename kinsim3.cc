@@ -299,7 +299,7 @@ double targEn( double Ab, double At, double BEn, double Ex, double th_cm ) {
 double GetELoss( float Ei, float dist, int opt, string combo ) {
 	
 	// Returns the energy loss at a given initial energy and distance travelled in the target or Al dead layer
-	// Ei is the initial energy in keV
+	// Ei is the initial energy in MeV
 	// dist is the distance travelled in the target in mg/cm2
 	// opt = 0 calculates normal energy loss as particle moves through target (default)
 	// opt = 1 calculates energy increase, i.e. tracing particle back to reaction point
@@ -316,12 +316,14 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 	
 	for( int i = 0; i < Nmeshpoints; i++ ){
 		
-		if( E < 1000. ) break; // when we fall below 1 MeV we assume maximum energy loss
+		if( E < 1. ) break; // when we fall below 1 MeV we assume maximum energy loss
 
 		if( combo == "BT" ) dedx = gSP[0]->Eval(E);
 		else if( combo == "TT" ) dedx = gSP[1]->Eval(E);
 		else if( combo == "BA" ) dedx = gSP[2]->Eval(E);
 		else if( combo == "TA" ) dedx = gSP[3]->Eval(E);
+		
+		if( E > 400. && combo == "BT" ) cout << E << " " << dedx << endl;
 		
 		if( opt == 1 )
 			E += 1000.*dedx*dx;
