@@ -171,6 +171,8 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
     string pdfname = srimfile.substr( 0, srimfile.find_last_of(".") ) + ".pdf";
     c->SetLogx();
     c->SaveAs( pdfname.c_str() );
+	
+	delete c;
     
     return true;
     
@@ -315,7 +317,7 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 	for( int i = 0; i < Nmeshpoints; i++ ){
 		
 		if( E < 1000. ) break; // when we fall below 1 MeV we assume maximum energy loss
-		
+
 		if( combo == "BT" ) dedx = gSP[0]->Eval(E);
 		else if( combo == "TT" ) dedx = gSP[1]->Eval(E);
 		else if( combo == "BA" ) dedx = gSP[2]->Eval(E);
@@ -376,7 +378,7 @@ double GetBEn( double Ab, double At, double Eb, double Ex, double BTh, double th
     double dist = TMath::Abs( (double)(thick-depth) / TMath::Cos( BTh ) );
     Eproj -= GetELoss( Eproj, dist, 0, "BT" );
     
-    if( Eproj < 0. ) return 0.1; // projectile is stopped in target
+    if( Eproj < 0. ) return 0.1; // beam is stopped in target
     
 	// Correct for dead layer loss
 	dist = TMath::Abs( 0.0007 / TMath::Cos( BTh ) );
@@ -406,7 +408,7 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
         return;
 
 	// Open output file
-	string outname = convertInt(Ab) + gElName[Zb-1] + "_" + convertInt(At) + gElName[Zt-1] + "_";
+	string outname = convertInt(Ab+0.5) + gElName[Zb-1] + "_" + convertInt(At+0.5) + gElName[Zt-1] + "_";
     outname += convertFloat(thick,3) + "mg_" + convertFloat(Eb,3) + "MeVu_d";
 	outname += convertFloat(dEb,3) + "MeVu_res" + convertFloat(res,1) + ".root";
 	TFile *out = new TFile(outname.c_str(),"RECREATE");
@@ -417,25 +419,25 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
     for( int k=0; k<17; k++ )
         cd_angles[k] = GetTh( 15.5 - k, cd_dist ) * TMath::RadToDeg();
 
-	string title = "Kinematics in the lab frame for " + convertInt(Ab) + gElName[Zb-1] + " on ";
-	title += convertInt(At) + gElName[Zt-1] + " at " + convertFloat(Eb,3) + " MeV/u";
+	string title = "Kinematics in the lab frame for " + convertInt(Ab+0.5) + gElName[Zb-1] + " on ";
+	title += convertInt(At+0.5) + gElName[Zt-1] + " at " + convertFloat(Eb,3) + " MeV/u";
 	string title1 = title + ";Laboratory angle [deg];Energy [MeV]";
 	TH2F *kin_lab = new TH2F("kin_lab",title1.c_str(),(int)(180./stepSize),0,180,1000,0,1000);
-	string title2 = title + " (projectile);Laboratory angle [deg];Energy [MeV]";
-	TH2F *kin_lab_p = new TH2F("kin_lab_p",title2.c_str(),(int)(180./stepSize),0,180,1000,0,1000);
+	string title2 = title + " (beam);Laboratory angle [deg];Energy [MeV]";
+	TH2F *kin_lab_b = new TH2F("kin_lab_b",title2.c_str(),(int)(180./stepSize),0,180,1000,0,1000);
 	string title3 = title + " (recoil);Laboratory angle [deg];Energy [MeV]";
 	TH2F *kin_lab_t = new TH2F("kin_lab_t",title3.c_str(),(int)(180./stepSize),0,180,1000,0,1000);
-    string title7 = title + ";Lab angle of recoil [deg];Lab angle of projectile [deg]";
+    string title7 = title + ";Lab angle of recoil [deg];Lab angle of beam [deg]";
     TH2F *lab_lab = new TH2F("lab_lab",title7.c_str(),(int)(180./stepSize),0,180,(int)(180./stepSize),0,180);
     string title8 = title + ";Laboratory angle [deg];Energy [MeV]";
     TH2F *cd_sim = new TH2F("cd_sim",title8.c_str(),16,cd_angles,1000,0,1000);
 
-    title = "Kinematics in the CoM frame for " + convertInt(Ab) + gElName[Zb-1] + " on ";
-    title += convertInt(At) + gElName[Zt-1] + " at " + convertFloat(Eb,3) + " MeV/u";
+    title = "Kinematics in the CoM frame for " + convertInt(Ab+0.5) + gElName[Zb-1] + " on ";
+    title += convertInt(At+0.5) + gElName[Zt-1] + " at " + convertFloat(Eb,3) + " MeV/u";
     string title4 = title + ";Centre of mass angle [deg];Energy [MeV]";
 	TH2F *kin_com = new TH2F("kin_com",title4.c_str(),(int)(180./stepSize),0,180,1000,0,1000);
 	string title5 = title + ";Centre of mass angle [deg];Energy [MeV]";
-	TH2F *kin_com_p = new TH2F("kin_com_p",title5.c_str(),(int)(180./stepSize),0,180,1000,0,1000);
+	TH2F *kin_com_b = new TH2F("kin_com_b",title5.c_str(),(int)(180./stepSize),0,180,1000,0,1000);
 	string title6 = title + ";Centre of mass angle [deg];Energy [MeV]";
 	TH2F *kin_com_t = new TH2F("kin_com_t",title6.c_str(),(int)(180./stepSize),0,180,1000,0,1000);
 	
@@ -472,8 +474,6 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
 	gClx->SetTitle("Coulex cross section;Centre of mass angle [deg];d#sigma_{CE}/d#Omega");
 	double P_CE, dsigma_R, dsigma_CE, ang;
 
-	cout << "\n\t\tdsigma_CE = P_CE x dsigma_R\n";
-	
 	for( int k=0; k<200; k++ ) {
 	
 		ang = 0.0000001 + 180.*k/200.;
@@ -492,7 +492,7 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
 	gClx->Write("gClx");
 
 	// Some parameters needed for filling
-	double com, p_lab, p_en, t_lab, t_en, depth, Eb_real;
+	double com, b_lab, b_en, t_lab, t_en, depth, Eb_real;
 	TRandom3 rand;
 	
 	// Loop over number of events
@@ -508,28 +508,28 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
         depth = rand.Rndm(i) * thick;
         Eb_real = Eb + rand.Gaus( 0, dEb );
 		
-		p_lab = projLab( com*TMath::DegToRad(), Ab, At, Eb_real, Ex );
+		b_lab = projLab( com*TMath::DegToRad(), Ab, At, Eb_real, Ex );
 		t_lab = targLab( com*TMath::DegToRad(), Ab, At, Eb_real, Ex );
 
-        p_en = GetBEn( Ab, At, Eb_real, Ex, p_lab*TMath::DegToRad(), com*TMath::DegToRad(), thick, depth );
+        b_en = GetBEn( Ab, At, Eb_real, Ex, b_lab*TMath::DegToRad(), com*TMath::DegToRad(), thick, depth );
 		t_en = GetTEn( Ab, At, Eb_real, Ex, t_lab*TMath::DegToRad(), com*TMath::DegToRad(), thick, depth );
-        p_en += rand.Gaus( 0, res*p_en*0.01 ); // detector resolution %
+        b_en += rand.Gaus( 0, res*b_en*0.01 ); // detector resolution %
         t_en += rand.Gaus( 0, res*t_en*0.01 ); // detector resolution %
 		
-		lab_lab->Fill( p_lab, t_lab );
-        kin_lab_p->Fill( p_lab, p_en );
+		lab_lab->Fill( b_lab, t_lab );
+        kin_lab_b->Fill( b_lab, b_en );
         kin_lab_t->Fill( t_lab, t_en );
-        cd_sim->Fill( p_lab, p_en );
+        cd_sim->Fill( b_lab, b_en );
         cd_sim->Fill( t_lab, t_en );
-		kin_com_p->Fill( com, p_en );
+		kin_com_b->Fill( com, b_en );
 		kin_com_t->Fill( com, t_en );
 		
 	}
 	
     cout << endl;
 	
-	kin_lab->Add( kin_lab_p, kin_lab_t );
-	kin_com->Add( kin_com_p, kin_com_t );
+	kin_lab->Add( kin_lab_b, kin_lab_t );
+	kin_com->Add( kin_com_b, kin_com_t );
 	
     string name;
     for( int i = 0; i < cd_sim->GetNbinsX(); i++ ) {
