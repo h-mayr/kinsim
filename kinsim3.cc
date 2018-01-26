@@ -324,10 +324,10 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 		else if( combo == "TA" ) dedx = gSP[3]->Eval(E);
 		
 		if( opt == 1 )
-			E += 1000.*dedx*dx;
+			E += dedx*dx;
 		
 		else
-			E -= 1000.*dedx*dx;
+			E -= dedx*dx;
 		
 	}
 	
