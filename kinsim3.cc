@@ -62,15 +62,15 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
 	// Beam or target like..?
 	if( opt.substr(0,1) == "B" ) {
 		
-		srimfile += convertInt(Ab) + gElName[Zb-1];
-		title += convertInt(Ab) + gElName[Zb-1];
+		srimfile += convertInt(Ab+0.5) + gElName[Zb-1];
+		title += convertInt(Ab+0.5) + gElName[Zb-1];
 		
 	}
 	
 	else if( opt.substr(0,1) == "T" ) {
 		
-		srimfile += convertInt(At) + gElName[Zt-1];
-		title += convertInt(At) + gElName[Zt-1];
+		srimfile += convertInt(At+0.5) + gElName[Zt-1];
+		title += convertInt(At+0.5) + gElName[Zt-1];
 		index++;
 		
 	}
@@ -85,8 +85,8 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
 	// Target, contaminant or alumium dead layer..?
 	if( opt.substr(1,1) == "T" ) {
 		
-		srimfile += "_" + convertInt(At) + gElName[Zt-1] + ".txt";
-		title += " in " + convertInt(At) + gElName[Zt-1];
+		srimfile += "_" + convertInt(At+0.5) + gElName[Zt-1] + ".txt";
+		title += " in " + convertInt(At+0.5) + gElName[Zt-1];
 		title += ";Ion energy [MeV];Stopping power [MeV/(mg/cm^2)]";
 		
 	}
@@ -387,7 +387,7 @@ double GetBEn( double Ab, double At, double Eb, double Ex, double BTh, double th
 }
 
 void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, double Eb /* MeV/u */,
-    double dEb = 0.1 /* MeV/u */, double Ex = 1.0 /* MeV */, double res = 10. /* MeV */,
+    double dEb = 0.1 /* MeV/u */, double Ex = 1.0 /* MeV */, double res = 0.6 /* % */,
 	double cd_dist = 28.0 /* mm */, bool flat = false /* angular distribution? */,
 	long Nevts = 1E6, string srim_dir = "../srim" ) {
 		
@@ -408,7 +408,7 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
 	// Open output file
 	string outname = convertInt(Ab) + gElName[Zb-1] + "_" + convertInt(At) + gElName[Zt-1] + "_";
     outname += convertFloat(thick,3) + "mg_" + convertFloat(Eb,3) + "MeVu_d";
-	outname += convertFloat(dEb,3) + "MeVu_res" + convertFloat(res,3) + "MeV.root";
+	outname += convertFloat(dEb,3) + "MeVu_res" + convertFloat(res,1) + ".root";
 	TFile *out = new TFile(outname.c_str(),"RECREATE");
 
 	// Define and initiate histograms to fill
@@ -513,8 +513,8 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
 
         p_en = GetBEn( Ab, At, Eb_real, Ex, p_lab*TMath::DegToRad(), com*TMath::DegToRad(), thick, depth );
 		t_en = GetTEn( Ab, At, Eb_real, Ex, t_lab*TMath::DegToRad(), com*TMath::DegToRad(), thick, depth );
-        p_en += rand.Gaus( 0, res ); // detector resolution
-        t_en += rand.Gaus( 0, res ); // detector resolution
+        p_en += rand.Gaus( 0, res*p_en*0.01 ); // detector resolution %
+        t_en += rand.Gaus( 0, res*t_en*0.01 ); // detector resolution %
 		
 		lab_lab->Fill( p_lab, t_lab );
         kin_lab_p->Fill( p_lab, p_en );
@@ -525,6 +525,7 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
 		kin_com_t->Fill( com, t_en );
 		
 	}
+	
     cout << endl;
 	
 	kin_lab->Add( kin_lab_p, kin_lab_t );
