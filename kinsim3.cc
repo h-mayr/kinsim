@@ -323,8 +323,6 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 		else if( combo == "BA" ) dedx = gSP[2]->Eval(E);
 		else if( combo == "TA" ) dedx = gSP[3]->Eval(E);
 		
-		if( E > 400. && combo == "BT" ) cout << E << " " << dedx << endl;
-		
 		if( opt == 1 )
 			E += 1000.*dedx*dx;
 		
