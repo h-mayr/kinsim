@@ -1,5 +1,5 @@
 // Code to read in stopping powers from SRIM and plot in ROOT with some random spread
-// Liam Gaffney (liam.gaffney@uws.ac.uk) - September 2015
+// Liam Gaffney (liam.gaffney@cern.ch) - September 2015
 //
 // Updated 12th October 2016:
 //		- Added option to define where the srim files are
