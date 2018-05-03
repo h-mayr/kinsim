@@ -298,7 +298,7 @@ double targEn( double Ab, double At, double BEn, double Ex, double th_cm ) {
 
 double GetELoss( float Ei, float dist, int opt, string combo ) {
 	
-	// Returns the energy loss at a given initial energy and distance travelled in the target or Al dead layer
+	// Returns the energy loss at a given initial energy and distance travelled in the target or Si dead layer
 	// Ei is the initial energy in MeV
 	// dist is the distance travelled in the target in mg/cm2
 	// opt = 0 calculates normal energy loss as particle moves through target (default)
