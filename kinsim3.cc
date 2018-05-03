@@ -77,7 +77,7 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
 	
     else {
 		
-        cout << "opt must equal BT, TT, BA or TA\n";
+        cout << "opt must equal BT, TT, BS or TS\n";
         return false;
 		
 	}
@@ -91,10 +91,10 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
 		
 	}
 	
-	else if( opt.substr(1,1) == "A" ) {
+	else if( opt.substr(1,1) == "S" ) {
 		
-		srimfile += "_Al.txt";
-		title += " in the Al dead layer";
+		srimfile += "_Si.txt";
+		title += " in the Si dead layer";
 		title += ";Ion energy [keV];Stopping power [MeV/mm]";
 		index += 2;
 		
@@ -102,7 +102,7 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
 	
 	else {
 		
-		cout << "opt must equal BT, TT, BA or TA\n";
+		cout << "opt must equal BT, TT, BS or TS\n";
 		return false;
 		
 	}
@@ -187,8 +187,8 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir ) {
 	
 	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("BT") );
 	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("TT") );
-	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("BA") );
-	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("TA") );
+	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("BS") );
+	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("TS") );
 	
 	return success;
 	
@@ -303,11 +303,11 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 	// dist is the distance travelled in the target in mg/cm2
 	// opt = 0 calculates normal energy loss as particle moves through target (default)
 	// opt = 1 calculates energy increase, i.e. tracing particle back to reaction point
-	// combo = "BT", "TT", "BA" or "TA" for the beam in target, target in target,
-	// beam in Al or target in Al, respectively.
+	// combo = "BT", "TT", "BS" or "TS" for the beam in target, target in target,
+	// beam in Si or target in Si, respectively.
 	// Stopping power data is taken from SRIM the output files must be placed in the './srim/'
-	// folder with the format 62Fe_109Ag.txt, 62Fe_Al.txt, 109Ag_109Ag.txt or 109Ag_Al.txt,
-	// for combo = "BT", "TT", "BA" and "TA", repsectively.
+	// folder with the format 62Fe_109Ag.txt, 62Fe_Si.txt, 109Ag_109Ag.txt or 109Ag_Si.txt,
+	// for combo = "BT", "TT", "BS" and "TS", repsectively.
 
 	double dedx = 0;
 	int Nmeshpoints = 20; // number of steps to take in integration
@@ -320,8 +320,8 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 
 		if( combo == "BT" ) dedx = gSP[0]->Eval(E);
 		else if( combo == "TT" ) dedx = gSP[1]->Eval(E);
-		else if( combo == "BA" ) dedx = gSP[2]->Eval(E);
-		else if( combo == "TA" ) dedx = gSP[3]->Eval(E);
+		else if( combo == "BS" ) dedx = gSP[2]->Eval(E);
+		else if( combo == "TS" ) dedx = gSP[3]->Eval(E);
 		
 		if( opt == 1 )
 			E += dedx*dx;
@@ -357,7 +357,7 @@ double GetTEn( double Ab, double At, double Eb, double Ex, double TTh, double th
 	
 	// Correct for dead layer loss
 	dist = TMath::Abs( 0.0007 / TMath::Cos( TTh ) );
-	Etarg -= GetELoss( Etarg, dist, 0, "TA" );
+	Etarg -= GetELoss( Etarg, dist, 0, "TS" );
 
     return Etarg;
     
@@ -382,7 +382,7 @@ double GetBEn( double Ab, double At, double Eb, double Ex, double BTh, double th
     
 	// Correct for dead layer loss
 	dist = TMath::Abs( 0.0007 / TMath::Cos( BTh ) );
-	Eproj -= GetELoss( Eproj, dist, 0, "BA" );
+	Eproj -= GetELoss( Eproj, dist, 0, "BS" );
 
     return Eproj;
     
