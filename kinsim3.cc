@@ -1,11 +1,9 @@
 // Code to read in stopping powers from SRIM and plot in ROOT with some random spread
-// Liam Gaffney (liam.gaffney@cern.ch) - September 2015
+// Liam Gaffney (liam.gaffney@cern.ch) - Originally authord in September 2015
+// Follow https://github.com/lpgaff/kinsim for updates and bug fixes
 //
-// Updated 12th October 2016:
-//		- Added option to define where the srim files are
-//		- Added option to define the CD-target distance
-//		- Added option to use flat distribution or fake Coulex
-//		- Fixed error in recoil energy bug at 100 MeV (should be 100 keV)
+// Thanks to Nigel Warr, Kenzo Abrahams, Amar Boukhari, and others at Miniball
+// for help with testing, improvements and bug fixes.
 
 #include "TH1.h"
 #include "TH2.h"
