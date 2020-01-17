@@ -441,7 +441,7 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
 	
 	// Define and initiate Rutherford distribution
 	string eqnR = "1.44*((";
-	eqnR += convertInt(Zb) + "*" + convertInt(Zt) + ")/" + convertInt((int)(Eb*Ab)) + ")**2";
+	eqnR += convertFloat(Zb,5) + "*" + convertFloat(Zt,5) + ")/" + convertFloat(Eb*Ab,5) + ")**2";
 	eqnR += "/(sin(x*pi/360.)**4)";
 	TF1 *ruth = new TF1("ruth",eqnR.c_str(),1.0,180.0);
 	TGraph *gRuth = new TGraph(ruth);
