@@ -324,7 +324,7 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 		else if( combo == "TT" && bSP[1] ) dedx = gSP[1]->Eval(E);
 		else if( combo == "BS" && bSP[2] ) dedx = gSP[2]->Eval(E);
 		else if( combo == "TS" && bSP[3] ) dedx = gSP[3]->Eval(E);
-		else continue; // if no stopping powers given, assume zero (inefficient coding!)
+		else break; // if no stopping powers given, assume zero (inefficient coding!)
 		
 		if( opt == 1 )
 			E += dedx*dx;
@@ -333,8 +333,7 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 			E -= dedx*dx;
 		
 	}
-	
-	
+
 	if( opt == 0 ) return Ei - E;
 	else return E - Ei;
 	
