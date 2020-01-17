@@ -22,6 +22,7 @@
 using namespace std;
 
 TGraph *gSP[4];
+bool bSP[4];
 
 string convertInt( int number ) {
 	
@@ -80,7 +81,7 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
 		
 	}
     
-	// Target, contaminant or alumium dead layer..?
+	// Target or alumium dead layer..?
 	if( opt.substr(1,1) == "T" ) {
 		
 		srimfile += "_" + convertInt(At+0.5) + gElName[Zt-1] + ".txt";
@@ -183,10 +184,13 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir ) {
 	for( int i = 0; i < 4; i++ )
 		gSP[i] = new TGraph();
 	
-	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("BT") );
-	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("TT") );
-	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("BS") );
-	success *= stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("TS") );
+	bSP[0] = stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("BT") );
+	bSP[1] = stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("TT") );
+	bSP[2] = stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("BS") );
+	bSP[3] = stoppingpowers( Zb, Zt, Ab, At, srim_dir, std::string("TS") );
+	
+	// if we only have beam on target, then we carry on regardless
+	success = bSP[0];
 	
 	return success;
 	
@@ -317,9 +321,10 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 		if( E < 1. ) break; // when we fall below 1 MeV we assume maximum energy loss
 
 		if( combo == "BT" ) dedx = gSP[0]->Eval(E);
-		else if( combo == "TT" ) dedx = gSP[1]->Eval(E);
-		else if( combo == "BS" ) dedx = gSP[2]->Eval(E);
-		else if( combo == "TS" ) dedx = gSP[3]->Eval(E);
+		else if( combo == "TT" && bSP[1] ) dedx = gSP[1]->Eval(E);
+		else if( combo == "BS" && bSP[2] ) dedx = gSP[2]->Eval(E);
+		else if( combo == "TS" && bSP[3] ) dedx = gSP[3]->Eval(E);
+		else continue; // if no stopping powers given, assume zero (inefficient coding!)
 		
 		if( opt == 1 )
 			E += dedx*dx;
@@ -404,6 +409,8 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
 	for( int i = 0; i < 4; i++ ) gSP[i] = new TGraph();
 	if( !stoppingpowers( Zb, Zt, Ab, At, srim_dir ) )
         return;
+	if( bSP[1]*bSP[2]*bSP[3] == false )
+		cout << "**WARNING** Continuing assuming no energy loss for missing files" << endl;
 
 	// Open output file
 	string outname = convertInt(Ab+0.5) + gElName[Zb-1] + "_" + convertInt(At+0.5) + gElName[Zt-1] + "_";
