@@ -81,7 +81,7 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
 		
 	}
     
-	// Target or alumium dead layer..?
+	// Target or silicon dead layer..?
 	if( opt.substr(1,1) == "T" ) {
 		
 		srimfile += "_" + convertInt(At+0.5) + gElName[Zt-1] + ".txt";
@@ -115,25 +115,47 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
         return false;
         
     }
+	else cout << "Opened: " << srimfile << endl;
     
 	gSP[index]->SetTitle( title.c_str() );
 	
-    string line, units, tmp_str;
+    string line, line2, units, tmp_str, sp_unit = "NULL";
     stringstream line_ss;
+	vector< float > conversion;
+	float conversion_tmp;
+	float conversion_fnl;
     bool endflag = false;
     double BEn, nucl, elec, total, tmp_dbl;
     int p = 0;
-    
+
     // Test file format
     getline( infile, line );
-    if( line.substr( 0, 5 ) == " ====" ) {
+    if( line.substr( 1, 4 ) == "====" ) {
         
-        while( line.substr( 0, 5 ) != "  ---" )
+		while( line.substr( 0, 19 ) != " Stopping Units =  " )
+			getline( infile, line );
+		
+		sp_unit = line.substr( 19, 14 );
+		cout << "\tStopping Units = " << sp_unit << endl;
+
+		while( line.substr( 2, 5 ) != "-----" ) {
+			
             getline( infile, line );
+			if( line.size() < 7 )
+				getline( infile, line );
+			
+		}
         
         getline( infile, line ); // read first line of data
         
-    }
+	}
+	
+	else {
+		
+		cout << "\tcheck file format" << endl;
+		return false;
+		
+	}
     
     while( !infile.eof() && !endflag ) {
         
@@ -155,13 +177,75 @@ bool stoppingpowers( int Zb, int Zt, double Ab, double At, string srim_dir, stri
         // Get next line
         getline( infile, line );
         p++;
-        
+		
         // If we've reached the end, stop
-        if( line.substr( 0, 9 ) == "---------" ) endflag = true;
-        if( line.substr( 0, 9 ) == " Multiply" ) endflag = true;
-        
+        if( line.substr( 1, 8 ) == "========" ) endflag = true;
+		
+		// Get unit conversion factors
+		if( line.substr( 2, 5 ) == "-----" ) {
+			
+			getline( infile, line );
+			getline( infile, line2 );
+			if( line.substr( 0, 9 ) != " Multiply" || line2.substr( 2, 5 ) != "-----" ) {
+
+				cout << "Check file format around unit conversion" << endl;
+				return false;
+		
+			}
+			
+			getline( infile, line );
+			while( !infile.eof() && !endflag ) {
+
+				// Read in data
+				line_ss.str("");
+				line_ss << line.substr(0,15);
+				line_ss >> conversion_tmp;
+				conversion.push_back( conversion_tmp );
+				
+				// If we've reached the end, stop
+				if( line.substr( 1, 8 ) == "========" ) endflag = true;
+
+				getline( infile, line );
+				
+			}
+			
+		}
+
     }
-    
+	
+	if( conversion.size() < 7 ) {
+		
+		cout << " Not grabbed all conversion factors\n";
+		return false;
+		
+	}
+	
+	if( opt.substr(1,1) == "S" ) {
+	
+		conversion_fnl = conversion.at( 2 );
+		cout << "\tRequired Units = MeV / mm" << endl;
+		
+	}
+	else {
+		
+		conversion_fnl = conversion.at( 4 );
+		cout << "\tRequired Units = MeV / (mg/cm2)" << endl;
+		
+	}
+	
+	cout << "\t\tConversion factor = " << conversion_fnl << endl;
+	
+	if( conversion_fnl < 0.9999 || conversion_fnl > 1.0001 ) {
+		
+		for( int i = 0; i < gSP[index]->GetN(); i++ ) {
+			
+			gSP[index]->GetPoint( index, BEn, total );
+			gSP[index]->SetPoint( index, BEn, total*conversion_fnl );
+
+			
+		}
+	}
+
     TCanvas *c = new TCanvas();
     gSP[index]->Draw("A*");
     gSP[index]->GetXaxis()->SetTitleOffset(1.3);
