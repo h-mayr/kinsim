@@ -303,7 +303,7 @@ double projLab( double com, double Ab, double At, double Eb, double Ex ) {
 	double Th = TMath::ATan(y);
 	if( Th < 0. ) Th += TMath::Pi();
 	
-	return TMath::RadToDeg()*Th;
+	return Th;
 	
 }
 
@@ -322,7 +322,7 @@ double targLab( double com, double Ab, double At, double Eb, double Ex ) {
 	double Th = TMath::ATan(y);
 	if( Th < 0. ) Th += TMath::Pi();
 	
-	return TMath::RadToDeg()*Th;
+	return Th;
 
 }
 
