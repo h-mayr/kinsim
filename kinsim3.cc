@@ -294,8 +294,8 @@ double GetTh( double anno, double cd_dist ) {
 double projLab( double com, double Ab, double At, double Eb, double Ex ) {
 
 	double tau = Ab/At;
-	double Eprime = Eb*Ab - Ex*(1+tau);
-	double epsilon = TMath::Sqrt(Eb*Ab/Eprime);
+	double Eprime = Eb*Ab - Ex * ( 1 + tau );
+	double epsilon = TMath::Sqrt( Eb*Ab / Eprime );
 
 	// y = tan(theta_lab)
 	double y = TMath::Sin(com) / ( TMath::Cos(com) + tau*epsilon );
@@ -377,21 +377,19 @@ double targCoM( double theta_lab, double Ab, double At, double Eb, double Ex, bo
 
 	// maximum scattering angle may be exceeded...
 	float maxang = TMath::ASin( 1. / ( epsilon ) );
-	if( TTh > maxang ) TTh = maxang;
+	if( theta_lab > maxang ) theta_lab = maxang;
 	
-	float y = epsilon * TMath::Sin( TTh );
+	float y = epsilon * TMath::Sin( theta_lab );
 	if( kinflag ) y = TMath::ASin( -y );
 	else y = TMath::ASin( y );
 
-	float CoM = TTh + y;
+	float CoM = theta_lab + y;
 	CoM = TMath::Pi() - CoM;
 	if( CoM < 0. ) CoM += TMath::Pi();
 	if( CoM > TMath::Pi() ) CoM -= TMath::Pi();
 
 	return CoM;
 	
-
-
 }
 
 double projEn( double Ab, double At, double BEn, double Ex, double th_cm ) {
