@@ -4,6 +4,10 @@
 //
 // Thanks to Nigel Warr, Kenzo Abrahams, Amar Boukhari, and others at Miniball
 // for help with testing, improvements and bug fixes.
+//
+// Run interactively in ROOT session with:
+// [0] .L kinsim3.cc++
+// [1] kinsim3( ... )
 
 #include "TH1.h"
 #include "TH2.h"
