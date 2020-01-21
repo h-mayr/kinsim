@@ -296,66 +296,101 @@ double projLab( double com, double Ab, double At, double Eb, double Ex ) {
 	double tau = Ab/At;
 	double Eprime = Eb*Ab - Ex*(1+tau);
 	double epsilon = TMath::Sqrt(Eb*Ab/Eprime);
-	
-//	if( tau > 1 ) double Th_max = TMath::ASin(tau*epsilon);	
-		
+
 	// y = tan(theta_lab)
 	double y = TMath::Sin(com) / ( TMath::Cos(com) + tau*epsilon );
 
 	double Th = TMath::ATan(y);
 	if( Th < 0. ) Th += TMath::Pi();
+	
 	return TMath::RadToDeg()*Th;
 	
 }
 
 double targLab( double com, double Ab, double At, double Eb, double Ex ) {
 
+	/// Calculate the target angle in the lab from the centre of mass angle (radians)
+	/// @param CoM theta angle of the beam in the centre of mass frame
+
 	double tau = Ab/At;
-	double Eprime = Eb*Ab - Ex*(1+tau);
-	double epsilon = TMath::Sqrt(Eb*Ab/Eprime);
+	double Eprime = Eb*Ab - Ex * ( 1 + tau );
+	double epsilon = TMath::Sqrt( Eb*Ab / Eprime );
 
 	// y = tan(theta_lab)
 	double y = TMath::Sin(TMath::Pi()-com) / ( TMath::Cos(TMath::Pi()-com) + epsilon );
 
 	double Th = TMath::ATan(y);
 	if( Th < 0. ) Th += TMath::Pi();
+	
 	return TMath::RadToDeg()*Th;
 
 }
 
-double projCoM( double theta_lab, double Ab, double At, double Eb, double Ex ) {
+double projCoM( double theta_lab, double Ab, double At, double Eb, double Ex, bool kinflag ) {
 
+	/// Calculates CoM scattering angle from the beam laboratory angle in radians
+	/// @param BTh theta angle of the beam in laboratory frame
+	/// @param kinflag kinematics flag such that true is the backwards solution (i.e. CoM > 90 deg)
+	
 	double tau = Ab/At;
-	double Eprime = Eb*Ab - Ex*(1+tau);
-	double epsilon = TMath::Sqrt(Eb*Ab/Eprime);
+	double Eprime = Eb*Ab - Ex * ( 1 + tau );
+	double epsilon = TMath::Sqrt( Eb*Ab / Eprime );
 
-	// y = tan(theta_lab)
-	double y = TMath::Tan(theta_lab);
-	// x = cos(com)
-	double x = (-y*y*epsilon*tau + TMath::Sqrt(-y*y*epsilon*epsilon*tau*tau + y*y + 1) ) / (1+y*y);
+	// maximum scattering angle may be exceeded...
+	float maxang = TMath::ASin( 1. / ( tau * epsilon ) );
+	if( tau*epsilon > 1 && theta_lab > maxang ){
+		
+		cerr << "Maximum scattering angle exceed, theta_lab = maxang" << endl;
+		theta_lab = maxang;
+		
+	}
+	
+	if( kinflag && tau*epsilon < 1 ){
+		
+		cerr << "Only one solution for the beam, kinflag = false" << endl;
+		kinflag = false;
+		
+	}
 
-    double Th;
-    if( theta_lab < 0.5*TMath::Pi() ) Th = TMath::ACos(x);
-    else Th = TMath::Pi() - TMath::ACos(x);
-    if( Th < 0. ) Th += TMath::Pi();
-    return TMath::RadToDeg()*Th;
+	float y = epsilon * tau * TMath::Sin( theta_lab );
+	if( kinflag ) y = TMath::ASin( -y );
+	else y = TMath::ASin( y );
+
+	float CoM = theta_lab + y;
+	
+	if( CoM < 0. ) CoM += TMath::Pi();
+	if( CoM > TMath::Pi() ) CoM -= TMath::Pi();
+
+	return CoM;
 
 }
 
-double targCoM( double theta_lab, double Ab, double At, double Eb, double Ex ) {
+
+double targCoM( double theta_lab, double Ab, double At, double Eb, double Ex, bool kinflag ) {
+
+	/// Calculates CoM scattering angle from the target laboratory angle in radians
+	/// @param TTh theta angle of the target in laboratory frame
 
 	double tau = Ab/At;
-	double Eprime = Eb*Ab - Ex*(1+tau);
-	double epsilon = TMath::Sqrt(Eb*Ab/Eprime);
+	double Eprime = Eb*Ab - Ex * ( 1 + tau );
+	double epsilon = TMath::Sqrt( Eb*Ab / Eprime );
 
-	// y = tan(theta_lab)
-	double y = TMath::Tan(theta_lab);
-	// x = cos(com)
-	double x = (-y*y*epsilon*tau + TMath::Sqrt(-y*y*epsilon*epsilon*tau*tau + y*y + 1) ) / (1+y*y);
+	// maximum scattering angle may be exceeded...
+	float maxang = TMath::ASin( 1. / ( epsilon ) );
+	if( TTh > maxang ) TTh = maxang;
+	
+	float y = epsilon * TMath::Sin( TTh );
+	if( kinflag ) y = TMath::ASin( -y );
+	else y = TMath::ASin( y );
 
-	double Th = TMath::ACos(x);
-	if( Th < 0. ) Th += TMath::Pi();
-	return TMath::RadToDeg()*Th;
+	float CoM = TTh + y;
+	CoM = TMath::Pi() - CoM;
+	if( CoM < 0. ) CoM += TMath::Pi();
+	if( CoM > TMath::Pi() ) CoM -= TMath::Pi();
+
+	return CoM;
+	
+
 
 }
 
@@ -600,8 +635,8 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
         depth = rand.Rndm(i) * thick;
         Eb_real = Eb + rand.Gaus( 0, dEb );
 		
-		b_lab = projLab( com*TMath::DegToRad(), Ab, At, Eb_real, Ex );
-		t_lab = targLab( com*TMath::DegToRad(), Ab, At, Eb_real, Ex );
+		b_lab = projLab( com*TMath::DegToRad(), Ab, At, Eb_real, Ex ) * TMath::RadToDeg();
+		t_lab = targLab( com*TMath::DegToRad(), Ab, At, Eb_real, Ex ) * TMath::RadToDeg();
 
         b_en = GetBEn( Ab, At, Eb_real, Ex, b_lab*TMath::DegToRad(), com*TMath::DegToRad(), thick, depth );
 		t_en = GetTEn( Ab, At, Eb_real, Ex, t_lab*TMath::DegToRad(), com*TMath::DegToRad(), thick, depth );
