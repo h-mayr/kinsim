@@ -339,12 +339,13 @@ double projCoM( double theta_lab, double Ab, double At, double Eb, double Ex, bo
 	// maximum scattering angle may be exceeded...
 	float maxang = TMath::ASin( 1. / ( tau * epsilon ) );
 	if( tau*epsilon > 1 && theta_lab > maxang ){
-		
-		cerr << "Maximum scattering angle exceed, theta_lab = maxang" << endl;
+
+		cerr << "Maximum scattering angle exceed, theta_lab = maxang = ";
+		cerr << maxang * TMath::RadToDeg() << " degrees" << endl;
 		theta_lab = maxang;
-		
+			
 	}
-	
+
 	if( kinflag && tau*epsilon < 1 ){
 		
 		cerr << "Only one solution for the beam, kinflag = false" << endl;
@@ -377,7 +378,22 @@ double targCoM( double theta_lab, double Ab, double At, double Eb, double Ex, bo
 
 	// maximum scattering angle may be exceeded...
 	float maxang = TMath::ASin( 1. / ( epsilon ) );
-	if( theta_lab > maxang ) theta_lab = maxang;
+	if( theta_lab > maxang ){
+		
+		cerr << "Maximum scattering angle exceed, theta_lab = maxang = ";
+		cerr << maxang * TMath::RadToDeg() << " degrees" << endl;
+		theta_lab = maxang;
+		
+	}
+	
+	if( kinflag && tau*epsilon < 1 ){
+		
+		cerr << "Only one solution for the beam, kinflag = false" << endl;
+		kinflag = false;
+		
+	}
+
+
 	
 	float y = epsilon * TMath::Sin( theta_lab );
 	if( kinflag ) y = TMath::ASin( -y );
