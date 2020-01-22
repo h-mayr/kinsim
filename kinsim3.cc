@@ -291,11 +291,11 @@ double GetTh( double anno, double cd_dist ) {
 
 }
 
-double projLab( double com, double Ab, double At, double Eb, double Ex ) {
+double projLab( double com, double Ab, double At, double Eb_real, double Ex ) {
 
 	double tau = Ab/At;
-	double Eprime = Eb*Ab - Ex * ( 1 + tau );
-	double epsilon = TMath::Sqrt( Eb*Ab / Eprime );
+	double Eprime = Eb_real - Ex * ( 1 + tau );
+	double epsilon = TMath::Sqrt( Eb_real / Eprime );
 
 	// y = tan(theta_lab)
 	double y = TMath::Sin(com) / ( TMath::Cos(com) + tau*epsilon );
@@ -307,14 +307,14 @@ double projLab( double com, double Ab, double At, double Eb, double Ex ) {
 	
 }
 
-double targLab( double com, double Ab, double At, double Eb, double Ex ) {
+double targLab( double com, double Ab, double At, double Eb_real, double Ex ) {
 
 	/// Calculate the target angle in the lab from the centre of mass angle (radians)
 	/// @param CoM theta angle of the beam in the centre of mass frame
 
 	double tau = Ab/At;
-	double Eprime = Eb*Ab - Ex * ( 1 + tau );
-	double epsilon = TMath::Sqrt( Eb*Ab / Eprime );
+	double Eprime = Eb_real - Ex * ( 1 + tau );
+	double epsilon = TMath::Sqrt( Eb_real / Eprime );
 
 	// y = tan(theta_lab)
 	double y = TMath::Sin(TMath::Pi()-com) / ( TMath::Cos(TMath::Pi()-com) + epsilon );
@@ -326,15 +326,15 @@ double targLab( double com, double Ab, double At, double Eb, double Ex ) {
 
 }
 
-double projCoM( double theta_lab, double Ab, double At, double Eb, double Ex, bool kinflag ) {
+double projCoM( double theta_lab, double Ab, double At, double Eb_real, double Ex, bool kinflag ) {
 
 	/// Calculates CoM scattering angle from the beam laboratory angle in radians
 	/// @param BTh theta angle of the beam in laboratory frame
 	/// @param kinflag kinematics flag such that true is the backwards solution (i.e. CoM > 90 deg)
 	
 	double tau = Ab/At;
-	double Eprime = Eb*Ab - Ex * ( 1 + tau );
-	double epsilon = TMath::Sqrt( Eb*Ab / Eprime );
+	double Eprime = Eb_real - Ex * ( 1 + tau );
+	double epsilon = TMath::Sqrt( Eb_real / Eprime );
 
 	// maximum scattering angle may be exceeded...
 	float maxang = TMath::ASin( 1. / ( tau * epsilon ) );
@@ -360,14 +360,14 @@ double projCoM( double theta_lab, double Ab, double At, double Eb, double Ex, bo
 }
 
 
-double targCoM( double theta_lab, double Ab, double At, double Eb, double Ex, bool kinflag ) {
+double targCoM( double theta_lab, double Ab, double At, double Eb_real, double Ex, bool kinflag ) {
 
 	/// Calculates CoM scattering angle from the target laboratory angle in radians
 	/// @param TTh theta angle of the target in laboratory frame
 
 	double tau = Ab/At;
-	double Eprime = Eb*Ab - Ex * ( 1 + tau );
-	double epsilon = TMath::Sqrt( Eb*Ab / Eprime );
+	double Eprime = Eb_real - Ex * ( 1 + tau );
+	double epsilon = TMath::Sqrt( Eb_real / Eprime );
 
 	// maximum scattering angle may be exceeded...
 	float maxang = TMath::ASin( 1. / ( epsilon ) );
@@ -392,10 +392,10 @@ double targCoM( double theta_lab, double Ab, double At, double Eb, double Ex, bo
 	
 }
 
-double projEn( double Ab, double At, double BEn, double Ex, double th_cm ) {
+double projEn( double Ab, double At, double Eb_real, double Ex, double th_cm ) {
     
-    double Eprime = BEn - ( Ex * ( 1 + (Ab/At) ) );
-    double tau = (Ab/At) * TMath::Sqrt( BEn / Eprime );
+    double Eprime = Eb_real - ( Ex * ( 1 + (Ab/At) ) );
+    double tau = (Ab/At) * TMath::Sqrt( Eb_real / Eprime );
     
     double Eproj = TMath::Power( At/(At+Ab), 2.0 );
     Eproj *= 1. + tau*tau + 2.*tau*TMath::Cos( th_cm );
@@ -405,11 +405,11 @@ double projEn( double Ab, double At, double BEn, double Ex, double th_cm ) {
     
 }
 
-double targEn( double Ab, double At, double BEn, double Ex, double th_cm ) {
+double targEn( double Ab, double At, double Eb_real, double Ex, double th_cm ) {
     
-    double Eprime = BEn - ( Ex * ( 1 + (Ab/At) ) );
-    double tau = (Ab/At) * TMath::Sqrt( BEn / Eprime );
-    double epsilon = TMath::Sqrt( BEn / Eprime );
+    double Eprime = Eb_real - ( Ex * ( 1 + (Ab/At) ) );
+    double tau = (Ab/At) * TMath::Sqrt( Eb_real / Eprime );
+    double epsilon = TMath::Sqrt( Eb_real / Eprime );
     
     double Etarg = (At*Ab) / TMath::Power( (At+Ab), 2.0 );
     Etarg *= 1. + epsilon*epsilon + 2.*epsilon*TMath::Cos( TMath::Pi() - th_cm );
@@ -460,14 +460,14 @@ double GetELoss( float Ei, float dist, int opt, string combo ) {
 	
 }
 
-double GetTEn( double Ab, double At, double Eb, double Ex, double TTh, double th_cm, double thick, double depth ) {
+double GetTEn( double Ab, double At, double Eb_real, double Ex, double TTh, double th_cm, double thick, double depth ) {
 
 	// Returns energy of target after exiting the target
 
     if( TTh < 0.501*TMath::Pi() && TTh > 0.499*TMath::Pi() ) return 0.1; // stopped
     
     // energy at interaction point
-    double Ereac = Ab*Eb - GetELoss( Ab*Eb, depth, 0, "BT" );
+    double Ereac = Eb_real - GetELoss( Eb_real, depth, 0, "BT" );
     
     // energy after reaction
     double Etarg = targEn( Ab, At, Ereac, Ex, th_cm );
@@ -486,13 +486,13 @@ double GetTEn( double Ab, double At, double Eb, double Ex, double TTh, double th
     
 }
 
-double GetBEn( double Ab, double At, double Eb, double Ex, double BTh, double th_cm, double thick, double depth ) {
+double GetBEn( double Ab, double At, double Eb_real, double Ex, double BTh, double th_cm, double thick, double depth ) {
 
 	// Returns energy of target after exiting the target
     if( BTh < 0.501*TMath::Pi() && BTh > 0.499*TMath::Pi() ) return 0.1; // stopped
     
     // energy at interaction point
-    double Ereac = Ab*Eb - GetELoss( Ab*Eb, depth, 0, "BT" );
+    double Ereac = Eb_real - GetELoss( Eb_real, depth, 0, "BT" );
     
     // energy after reaction
     double Eproj = projEn( Ab, At, Ereac, Ex, th_cm );
@@ -632,6 +632,7 @@ void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, 
 		else com = hClx->GetRandom();
         depth = rand.Rndm(i) * thick;
         Eb_real = Eb + rand.Gaus( 0, dEb );
+		Eb_real *= Ab;
 		
 		b_lab = projLab( com*TMath::DegToRad(), Ab, At, Eb_real, Ex ) * TMath::RadToDeg();
 		t_lab = targLab( com*TMath::DegToRad(), Ab, At, Eb_real, Ex ) * TMath::RadToDeg();
