@@ -514,7 +514,7 @@ double GetBEn( double Ab, double At, double Eb_real, double Ex, double BTh, doub
 void kinsim3( int Zb, int Zt, double Ab, double At, double thick /* mg/cm^2 */, double Eb /* MeV/u */,
     double dEb = 0.1 /* MeV/u */, double Ex = 1.0 /* MeV */, double res = 0.6 /* % */,
 	double cd_dist = 28.0 /* mm */, bool flat = false /* angular distribution? */,
-	long Nevts = 1E6, string srim_dir = "../srim" ) {
+	long Nevts = 1E6, string srim_dir = "./srim" ) {
 		
     // Suppress some message from root
     gErrorIgnoreLevel = kWarning;
