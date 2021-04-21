@@ -1,6 +1,6 @@
 # kinsim
 
-[![DOI](https://zenodo.org/badge/159710132.svg)](https://zenodo.org/badge/latestdoi/159710132)
+[![DOI](https://zenodo.org/badge/119072900.svg)](https://zenodo.org/badge/latestdoi/119072900)
 
 kinsim uses ROOT and input files from SRIM to perform a Monte-Carlo simulation of the reaction kinematics, including energy loss through the target and the dead layers of the silicon detector.
 Although designed for the Miniball CD setup, it produces a set of generic histograms of scattering energy vs angle that can be used for any similar setup.
