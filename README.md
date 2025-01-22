@@ -14,27 +14,27 @@ If you do not want to add it to a system folder (wise), then you can update the 
 ### Usage
 
 Load the script in ROOT and compile it at the same time with:
-'''
+<code>
 .L kinsim3.cc+
-'''
+</code>
 
 The main function requires a number of arguments, as follows:
-'''
+<code>
 void kinsim3(int Zb, int Zt, double Ab, double At, double thick, double Eb, double dEb = 0.10000000000000001, double Ex = 1., double res = 0.59999999999999998, double cd_dist = 28., bool flat = false, long Nevts = 1.0E+6, string srim_dir = "./srim")
-'''
+</code>
 
-Zb: Proton number of beam
-Zt: Proton number of target
-Ab: Mass number of beam
-At: Mass number of target
-thick: Target thickness in mg/cm^2
-Eb: Beam energy in MeV/u
-dEb: Sigma width of the beam energy in MeV/u
-Ex: Excitiation energy of the inelastic reaction in MeV; use 0 for elastic scattering
-res: Intrinsic energy resolution of the silicon detector in %
-cd_dist: Distance from the target to the CD detector, if using Miniball
-flat: Angular distribution of events is constant/flat if this is true, else an arbitrary Coulex like distribution is used (not Rutherford)
-Nevts: Number of events to simulate
+Zb: Proton number of beam  
+Zt: Proton number of target  
+Ab: Mass number of beam  
+At: Mass number of target  
+thick: Target thickness in mg/cm^2  
+Eb: Beam energy in MeV/u  
+dEb: Sigma width of the beam energy in MeV/u  
+Ex: Excitiation energy of the inelastic reaction in MeV; use 0 for elastic scattering  
+res: Intrinsic energy resolution of the silicon detector in %  
+cd_dist: Distance from the target to the CD detector, if using Miniball  
+flat: Angular distribution of events is constant/flat if this is true, else an arbitrary Coulex like distribution is used (not Rutherford)  
+Nevts: Number of events to simulate  
 srim_dir: Path to the SRIM output files
 
 
@@ -61,6 +61,6 @@ Files should cover a range of energies from as low as 10 keV (default in SRIM), 
 
 ### Output
 
-A ROOT file is created in the output with a number of historgrams showing the kinematics of the beam and target particles in the laboratory and centre of mass frames.
-The simulated energy vs. angle spectrum for the Miniball CD detector is '''cd_sim'''.
+A ROOT file is created in the output with a number of histograms showing the kinematics of the beam and target particles in the laboratory and centre of mass frames.  
+The simulated energy vs. angle spectrum for the Miniball CD detector is '''cd_sim'''.  
 Each of the 16 strips are projected to 1D energy spectra, useful for calibration purposes, where the expected energy can be extracted from the centroids of the distributions.
