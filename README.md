@@ -30,7 +30,7 @@ At: Mass number of target
 thick: Target thickness in mg/cm^2  
 Eb: Beam energy in MeV/u  
 dEb: Sigma width of the beam energy in MeV/u  
-Ex: Excitiation energy of the inelastic reaction in MeV; use 0 for elastic scattering  
+Ex: Excitation energy of the inelastic reaction in MeV; use 0 for elastic scattering  
 res: Intrinsic energy resolution of the silicon detector in %  
 cd_dist: Distance from the target to the CD detector, if using Miniball  
 flat: Angular distribution of events is constant/flat if this is true, else an arbitrary Coulex like distribution is used (not Rutherford)  
