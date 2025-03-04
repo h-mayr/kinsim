@@ -23,20 +23,20 @@ The main function requires a number of arguments, as follows:
 void kinsim4(int Zb, int Zt, double Ab, double At, double thick, double Eb, double dEb = 0.1, double Ex = 1., double res = 0.6, double beam_sigma = 1.5, double cd_dist = 28., bool flat = false, long Nevts = 1.0E+6, string srim_dir = "./srim")
 ```
 
-`Zb`: Proton number of beam
-`Zt`: Proton number of target
-`Ab`: Mass number of beam
-`At`: Mass number of target
-`thick`: Target thickness in mg/cm^2
-`Eb`: Beam energy in MeV/u
-`dEb`: Sigma width of the beam energy in MeV/u
-`Ex`: Excitiation energy of the inelastic reaction in MeV; use 0 for elastic scattering
-`res`: Intrinsic energy resolution of the silicon detector in %
-`cd_dist`: Distance from the target to the CD detector, if using Miniball
-`beam_sigma`: Beam spot size (sigma in mm) assuming Gaussian distribution in x-y
-`flat`: Angular distribution of events is constant/flat if this is true, else an arbitrary Coulex like distribution is used (not Rutherford)
-`Nevts`: Number of events to simulate
-`srim_dir`: Path to the SRIM output files
+  * `Zb`: Proton number of beam
+  * `Zt`: Proton number of target
+  * `Ab`: Mass number of beam
+  * `At`: Mass number of target
+  * `thick`: Target thickness in mg/cm^2
+  * `Eb`: Beam energy in MeV/u
+  * `dEb`: Sigma width of the beam energy in MeV/u
+  * `Ex`: Excitiation energy of the inelastic reaction in MeV; use 0 for elastic scattering
+  * `res`: Intrinsic energy resolution of the silicon detector in %
+  * `cd_dist`: Distance from the target to the CD detector, if using Miniball
+  * `beam_sigma`: Beam spot size (sigma in mm) assuming Gaussian distribution in x-y
+  * `flat`: Angular distribution of events is constant/flat if this is true, else an arbitrary Coulex like distribution is used (not Rutherford)
+  * `Nevts`: Number of events to simulate
+  * `srim_dir`: Path to the SRIM output files
 
 
 ### SRIM files
