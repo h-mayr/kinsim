@@ -32,4 +32,5 @@
 *.app
 
 # ROOT things
+*.root
 *.pcm
