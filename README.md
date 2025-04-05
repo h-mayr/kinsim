@@ -32,8 +32,8 @@ void kinsim4(int Zb, int Zt, double Ab, double At, double thick, double Eb, doub
   * `dEb`: Sigma width of the beam energy in MeV/u
   * `Ex`: Excitiation energy of the inelastic reaction in MeV; use 0 for elastic scattering
   * `res`: Intrinsic energy resolution of the silicon detector in %
-  * `cd_dist`: Distance from the target to the CD detector, if using Miniball
   * `beam_sigma`: Beam spot size (sigma in mm) assuming Gaussian distribution in x-y
+  * `cd_dist`: Distance from the target to the CD detector, if using Miniball
   * `flat`: Angular distribution of events is constant/flat if this is true, else an arbitrary Coulex like distribution is used (not Rutherford)
   * `Nevts`: Number of events to simulate
   * `srim_dir`: Path to the SRIM output files
@@ -62,7 +62,6 @@ Some other examples can be found in the source code of MiniballSort at http://gi
 
 
 ### Output
-
 
 A ROOT file is created in the output with a number of historgrams showing the kinematics of the beam and target particles in the laboratory and centre of mass frames.
 The simulated energy vs. angle spectrum for the Miniball CD detector is `cd_sim`.
