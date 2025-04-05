@@ -31,5 +31,9 @@
 *.out
 *.app
 
+# SRIM PDFs
+*.pdf
+
 # ROOT things
+*.root
 *.pcm
